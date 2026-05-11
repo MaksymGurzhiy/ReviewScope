@@ -254,4 +254,4 @@ RLS policies guarantee that users can only see their own rows.
 
 ## License
 
-Diploma project, 2026. All rights reserved.
+Gurzhii Maksym, 2026. All rights reserved.
