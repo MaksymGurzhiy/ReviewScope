@@ -1,0 +1,31 @@
+.venv/
+.git/
+.gitignore
+.idea/
+__pycache__/
+*.pyc
+*.pyo
+.cache/
+.pytest_cache/
+
+frontend/node_modules/
+frontend/dist/
+frontend/.env*
+frontend/.vite/
+
+# Local data
+data/raw/*
+!data/raw/.gitkeep
+outputs/
+
+# Diploma artifacts
+*.docx
+*.pdf
+_extracted_images/
+_zvit_images/
+_diplom_images/
+_new_images/
+
+# Tests / scratch
+_*.py
+tests/

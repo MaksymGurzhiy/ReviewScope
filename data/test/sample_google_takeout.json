@@ -1,0 +1,44 @@
+{
+  "reviews": [
+    {
+      "comment": "Amazing experience! The service was outstanding and the quality exceeded my expectations.",
+      "starRating": "FIVE",
+      "createTime": "2024-01-15T10:30:00Z",
+      "reviewer": {
+        "displayName": "John Doe"
+      }
+    },
+    {
+      "comment": "Good but could be better. The staff needs more training.",
+      "starRating": "THREE",
+      "createTime": "2024-01-16T14:20:00Z",
+      "reviewer": {
+        "displayName": "Jane Smith"
+      }
+    },
+    {
+      "comment": "Terrible experience. Very disappointed with everything.",
+      "starRating": "ONE",
+      "createTime": "2024-01-17T09:15:00Z",
+      "reviewer": {
+        "displayName": "Bob Johnson"
+      }
+    },
+    {
+      "comment": "Excellent! Will definitely recommend to friends and family.",
+      "starRating": "FIVE",
+      "createTime": "2024-01-18T16:45:00Z",
+      "reviewer": {
+        "displayName": "Alice Williams"
+      }
+    },
+    {
+      "comment": "Pretty good. A few minor issues but overall satisfied.",
+      "starRating": "FOUR",
+      "createTime": "2024-01-19T11:30:00Z",
+      "reviewer": {
+        "displayName": "Charlie Brown"
+      }
+    }
+  ]
+}

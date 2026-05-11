@@ -1,0 +1,52 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0" version="26.3.0">
+  <diagram name="Deployment" id="0">
+    <mxGraphModel dx="1546" dy="852" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="826" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="browser" value="«device»&#xa;Browser&#xa;(Chrome / Edge / Firefox)" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="60" y="200" width="220" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="spa" value="«artifact»&#xa;ReviewScope SPA&#xa;React 19.2 + Vite + Tailwind" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e6efff;strokeColor=#6c8ebf;" parent="1" vertex="1">
+          <mxGeometry x="80" y="270" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="server" value="«device»&#xa;Application Server&#xa;(Docker / Uvicorn :8000)" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;verticalAlign=top;" parent="1" vertex="1">
+          <mxGeometry x="420" y="100" width="280" height="380" as="geometry" />
+        </mxCell>
+        <mxCell id="api" value="«artifact»&#xa;FastAPI app&#xa;(routers + services)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e7f5e3;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="450" y="170" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nlp" value="«artifact»&#xa;NLP Pipeline&#xa;(BERT, BERTopic, spaCy)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fde0de;strokeColor=#b85450;" parent="1" vertex="1">
+          <mxGeometry x="450" y="240" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="hf" value="«artifact»&#xa;HF model cache&#xa;(./models/)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff8df;strokeColor=#d6b656;" parent="1" vertex="1">
+          <mxGeometry x="450" y="310" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="gpu" value="«device»&#xa;CUDA GPU (optional)" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+          <mxGeometry x="450" y="380" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cloud" value="«cloud»&#xa;Supabase (managed)" style="shape=cloud;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;verticalAlign=top;" parent="1" vertex="1">
+          <mxGeometry x="840" y="160" width="280" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="pg" value="«database»&#xa;PostgreSQL 15&#xa;(users, projects, analyses, results)" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=#ece4f3;strokeColor=#9673a6;" parent="1" vertex="1">
+          <mxGeometry x="860" y="210" width="240" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="auth" value="«component» Auth (JWT ES256)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ece4f3;strokeColor=#9673a6;" parent="1" vertex="1">
+          <mxGeometry x="860" y="280" width="240" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="storage" value="«component» Storage (review files)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ece4f3;strokeColor=#9673a6;" parent="1" vertex="1">
+          <mxGeometry x="860" y="320" width="240" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="l1" value="HTTPS / REST" style="endArrow=open;html=1;startArrow=open;" parent="1" source="browser" target="server" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="l2" value="HTTPS (supabase-py + JWKS)" style="endArrow=open;html=1;startArrow=open;" parent="1" source="server" edge="1">
+          <mxGeometry y="20" relative="1" as="geometry">
+            <mxPoint x="860" y="290" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,51 @@
+# =====================================================
+# ReviewScope - NLP Review Analysis Platform
+# =====================================================
+
+# --- Core ML / NLP ---
+transformers>=4.35.0
+torch>=2.0.0
+bertopic>=0.16.0
+keybert>=0.8.0
+sentence-transformers>=2.2.0
+scikit-learn>=1.3.0
+spacy>=3.7.0
+langdetect>=1.0.9
+
+# --- Data Processing ---
+pandas>=2.0.0
+numpy>=1.24.0
+openpyxl>=3.1.0
+xlrd>=2.0.1
+
+# --- Visualization & Reports ---
+matplotlib>=3.7.0
+seaborn>=0.12.0
+reportlab>=4.0.0
+
+# --- Web Framework ---
+fastapi>=0.110.0
+uvicorn[standard]>=0.27.0
+python-multipart>=0.0.9
+
+# --- Auth (Supabase JWT) ---
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+
+# --- Supabase ---
+supabase>=2.4.0
+postgrest>=0.16.0
+storage3>=0.7.0
+gotrue>=2.4.0
+
+# --- Database (direct pg access for analytics queries) ---
+sqlalchemy>=2.0.0
+asyncpg>=0.29.0
+psycopg2-binary>=2.9.9
+
+# --- Utilities ---
+python-dotenv>=1.0.0
+tqdm>=4.65.0
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+httpx>=0.27.0

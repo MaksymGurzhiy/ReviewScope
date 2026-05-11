@@ -1,0 +1,37 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0" version="26.3.0">
+  <diagram name="DB-Schema" id="0">
+    <mxGraphModel dx="1546" dy="852" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="826" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="users" value="&lt;b&gt;users (Supabase Auth)&lt;/b&gt;&#xa;━━━━━━━━━━━━━━━━━━━━━&#xa;PK  id : uuid&#xa;     email : text&#xa;     created_at : timestamptz&#xa;     raw_user_meta : jsonb" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;spacingLeft=8;spacingTop=4;" parent="1" vertex="1">
+          <mxGeometry x="40" y="80" width="260" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="profiles" value="&lt;b&gt;profiles&lt;/b&gt;&#xa;━━━━━━━━━━━━━━━━━━━━━&#xa;PK FK  user_id : uuid → users.id&#xa;         api_key : text (unique)&#xa;         display_name : text&#xa;         created_at : timestamptz" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;spacingLeft=8;spacingTop=4;" parent="1" vertex="1">
+          <mxGeometry x="40" y="280" width="260" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="projects" value="&lt;b&gt;projects&lt;/b&gt;&#xa;━━━━━━━━━━━━━━━━━━━━━&#xa;PK  id : uuid&#xa;FK  user_id : uuid → users.id&#xa;     name : text&#xa;     description : text&#xa;     created_at / updated_at : timestamptz" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;spacingLeft=8;spacingTop=4;" parent="1" vertex="1">
+          <mxGeometry x="400" y="80" width="280" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="analyses" value="&lt;b&gt;analyses&lt;/b&gt;&#xa;━━━━━━━━━━━━━━━━━━━━━&#xa;PK  id : uuid&#xa;FK  project_id : uuid → projects.id&#xa;FK  user_id : uuid → users.id&#xa;     file_name : text&#xa;     file_path : text (Storage URL)&#xa;     file_format : enum csv|xlsx|json&#xa;     file_size : int&#xa;     status : enum pending|running|done|error&#xa;     created_at / completed_at : timestamptz" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;spacingLeft=8;spacingTop=4;" parent="1" vertex="1">
+          <mxGeometry x="400" y="300" width="280" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="results" value="&lt;b&gt;analysis_results&lt;/b&gt;&#xa;━━━━━━━━━━━━━━━━━━━━━&#xa;PK FK  analysis_id : uuid → analyses.id&#xa;          summary : jsonb&#xa;            ├─ sentiment_summary&#xa;            ├─ topics[]&#xa;            ├─ keywords (positive|neutral|negative)&#xa;            ├─ aspects (mentions, polarity, opinions)&#xa;            └─ conclusion (5-tier + action plan)&#xa;          raw_reviews : jsonb (per-review BERT scores)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;spacingLeft=8;spacingTop=4;" parent="1" vertex="1">
+          <mxGeometry x="780" y="307.5" width="320" height="155" as="geometry" />
+        </mxCell>
+        <mxCell id="r1" value="1 — 1" style="endArrow=ERmany;startArrow=ERone;html=1;" parent="1" source="users" target="profiles" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r2" value="1 — N" style="endArrow=ERmany;startArrow=ERone;html=1;" parent="1" source="users" target="projects" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r3" value="1 — N" style="endArrow=ERmany;startArrow=ERone;html=1;" parent="1" source="projects" target="analyses" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r4" value="1 — 1" style="endArrow=ERone;startArrow=ERone;html=1;" parent="1" source="analyses" target="results" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,134 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0" version="26.3.0">
+  <diagram name="Sequence-ExportPDF" id="0">
+    <mxGraphModel dx="1546" dy="852" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="826" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="user_h" value="Користувач" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="60" y="40" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="user_l" style="endArrow=none;html=1;dashed=1;strokeColor=#6c8ebf;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="140" y="80" as="sourcePoint" />
+            <mxPoint x="140" y="700" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ui_h" value="React UI&#xa;(AnalysisDetail)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="240" y="40" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ui_l" style="endArrow=none;html=1;dashed=1;strokeColor=#82b366;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="80" as="sourcePoint" />
+            <mxPoint x="320" y="700" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="api_h" value="FastAPI (exports.py)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="420" y="40" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="api_l" style="endArrow=none;html=1;dashed=1;strokeColor=#d6b656;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="500" y="80" as="sourcePoint" />
+            <mxPoint x="500" y="700" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="svc_h" value="ExportService" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="600" y="40" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="svc_l" style="endArrow=none;html=1;dashed=1;strokeColor=#b85450;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="680" y="80" as="sourcePoint" />
+            <mxPoint x="680" y="700" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rl_h" value="ReportLab" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="780" y="40" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="rl_l" style="endArrow=none;html=1;dashed=1;strokeColor=#9673a6;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="860" y="80" as="sourcePoint" />
+            <mxPoint x="860" y="700" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="db_h" value="Supabase" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#cdeb8b;strokeColor=#36393d;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="960" y="40" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="db_l" style="endArrow=none;html=1;dashed=1;strokeColor=#36393d;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1040" y="80" as="sourcePoint" />
+            <mxPoint x="1040" y="700" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m1" value="клік «Export PDF»" style="endArrow=block;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="140" y="130" as="sourcePoint" />
+            <mxPoint x="320" y="130" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m2" value="GET /api/analyses/{id}/export/pdf  (Bearer JWT)" style="endArrow=block;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="180" as="sourcePoint" />
+            <mxPoint x="500" y="180" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m3" value="get_analysis(id, user_id)  (RLS check)" style="endArrow=block;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="500" y="230" as="sourcePoint" />
+            <mxPoint x="1040" y="230" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m3r" value="analysis + result (jsonb)" style="endArrow=open;html=1;dashed=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1040" y="270" as="sourcePoint" />
+            <mxPoint x="500" y="270" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m4" value="export_results_pdf(result, analysis)" style="endArrow=block;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="500" y="320" as="sourcePoint" />
+            <mxPoint x="680" y="320" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m5" value="SimpleDocTemplate.build(story)" style="endArrow=block;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="680" y="370" as="sourcePoint" />
+            <mxPoint x="860" y="370" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m6" value="render: Conclusion + Sentiment + ABSA + Topics + Keywords + Sample" style="endArrow=block;html=1;dashed=1;edgeStyle=orthogonalEdgeStyle;align=left;labelPosition=right;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="860" y="420" as="sourcePoint" />
+            <mxPoint x="860" y="460" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="940" y="420" />
+              <mxPoint x="940" y="460" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m7" value="pdf_bytes" style="endArrow=open;html=1;dashed=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="860" y="510" as="sourcePoint" />
+            <mxPoint x="680" y="510" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m8" value="bytes" style="endArrow=open;html=1;dashed=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="680" y="550" as="sourcePoint" />
+            <mxPoint x="500" y="550" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m9" value="200 OK&#xa;Content-Type: application/pdf&#xa;Content-Disposition: attachment" style="endArrow=open;html=1;dashed=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="500" y="600" as="sourcePoint" />
+            <mxPoint x="320" y="600" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m10" value="збереження файлу через браузер" style="endArrow=open;html=1;dashed=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="660" as="sourcePoint" />
+            <mxPoint x="140" y="660" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

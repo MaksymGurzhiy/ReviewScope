@@ -1,0 +1,93 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Environment variables
+.env
+
+# Data files
+data/raw/*
+data/processed/*
+!data/test/
+outputs/reports/*
+outputs/visualizations/*
+
+# Keep example files
+!data/test/.gitkeep
+!outputs/reports/.gitkeep
+!outputs/visualizations/.gitkeep
+
+# ML Models cache
+.cache/
+models/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# Logs
+*.log
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env*
+frontend/.vite/
+!frontend/.env.example
+
+# Diploma artifacts (docs, exports, backups, dev scripts)
+*.docx
+*.pdf
+_BACKUP_*
+_extracted_images/
+_zvit_images/
+_diplom_images/
+_new_images/
+_*.py
+_*.txt
+generate_report.py
+/d1.drawio
+
+# Sample / large datasets in root (keep small samples in data/raw via .gitkeep)
+/Airpods_Reviews.csv
+/Amazon*.csv
+/Yelp*.csv
+/sample_reviews.csv
+
+# Leftover Vite scaffold (created accidentally inside frontend/)
+frontend/frontend/

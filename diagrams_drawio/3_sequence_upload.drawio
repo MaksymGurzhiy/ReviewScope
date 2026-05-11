@@ -1,0 +1,135 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0" version="26.3.0">
+  <diagram name="Sequence-Upload" id="0">
+    <mxGraphModel dx="1546" dy="852" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="826" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="user_h" value="Користувач" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="60" y="40" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="user_l" style="endArrow=none;html=1;dashed=1;strokeColor=#6c8ebf;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="140" y="80" as="sourcePoint" />
+            <mxPoint x="140" y="780" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ui_h" value="React UI" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="240" y="40" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ui_l" style="endArrow=none;html=1;dashed=1;strokeColor=#82b366;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="80" as="sourcePoint" />
+            <mxPoint x="320" y="780" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="api_h" value="FastAPI (analyses.py)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="420" y="40" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="api_l" style="endArrow=none;html=1;dashed=1;strokeColor=#d6b656;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="500" y="80" as="sourcePoint" />
+            <mxPoint x="500" y="780" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="svc_h" value="AnalysisService" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="600" y="40" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="svc_l" style="endArrow=none;html=1;dashed=1;strokeColor=#b85450;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="680" y="80" as="sourcePoint" />
+            <mxPoint x="680" y="780" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlp_h" value="NLPPipeline" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="780" y="40" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="nlp_l" style="endArrow=none;html=1;dashed=1;strokeColor=#9673a6;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="860" y="80" as="sourcePoint" />
+            <mxPoint x="860" y="780" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="db_h" value="Supabase" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#cdeb8b;strokeColor=#36393d;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="960" y="40" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="db_l" style="endArrow=none;html=1;dashed=1;strokeColor=#36393d;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1040" y="80" as="sourcePoint" />
+            <mxPoint x="1040" y="780" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m1" value="upload(file)" style="endArrow=block;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="140" y="130" as="sourcePoint" />
+            <mxPoint x="320" y="130" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m2" value="POST /api/analyses/upload" style="endArrow=block;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="180" as="sourcePoint" />
+            <mxPoint x="500" y="180" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m3" value="storage.upload(bytes)" style="endArrow=block;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="500" y="230" as="sourcePoint" />
+            <mxPoint x="1040" y="230" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m4" value="create_analysis(meta)" style="endArrow=block;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="500" y="280" as="sourcePoint" />
+            <mxPoint x="680" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m5" value="POST /run (background)" style="endArrow=block;html=1;dashed=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="340" as="sourcePoint" />
+            <mxPoint x="500" y="340" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m6" value="ParserFactory.parse(file)" style="endArrow=block;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="680" y="400" as="sourcePoint" />
+            <mxPoint x="860" y="400" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m7" value="run(reviews, file_name)" style="endArrow=block;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="680" y="450" as="sourcePoint" />
+            <mxPoint x="860" y="450" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m8" value="sentiment + topics + log-odds + ABSA + summary" style="endArrow=block;html=1;dashed=1;edgeStyle=orthogonalEdgeStyle;align=left;verticalAlign=middle;labelPosition=right;verticalLabelPosition=middle;" parent="1" edge="1">
+          <mxGeometry x="0.4" y="-20" relative="1" as="geometry">
+            <mxPoint x="860" y="500" as="sourcePoint" />
+            <mxPoint x="860" y="540" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="940" y="500" />
+              <mxPoint x="940" y="540" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m9" value="save_result(json)" style="endArrow=block;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="680" y="590" as="sourcePoint" />
+            <mxPoint x="1040" y="590" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m10" value="200 OK + analysis_id" style="endArrow=open;html=1;dashed=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="500" y="650" as="sourcePoint" />
+            <mxPoint x="320" y="650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m11" value="render dashboard" style="endArrow=open;html=1;dashed=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="710" as="sourcePoint" />
+            <mxPoint x="140" y="710" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

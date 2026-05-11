@@ -1,0 +1,216 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap");
+
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-serif: "Newsreader", ui-serif, Georgia, "Times New Roman", serif;
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "DM Mono", ui-monospace, monospace;
+
+  --color-paper-50: var(--paper-50);
+  --color-paper-100: var(--paper-100);
+  --color-cream-50: var(--cream-50);
+  --color-cream-100: var(--cream-100);
+  --color-rule-200: var(--rule-200);
+  --color-rule-300: var(--rule-300);
+  --color-ink-400: var(--ink-400);
+  --color-ink-500: var(--ink-500);
+  --color-ink-600: var(--ink-600);
+  --color-ink-700: var(--ink-700);
+  --color-ink-900: var(--ink-900);
+  --color-accent-50: var(--accent-50);
+  --color-accent-600: var(--accent-600);
+  --color-accent-700: var(--accent-700);
+  --color-moss-50: var(--moss-50);
+  --color-moss-200: var(--moss-200);
+  --color-moss-500: var(--moss-500);
+  --color-moss-600: var(--moss-600);
+  --color-moss-700: var(--moss-700);
+  --color-moss-800: var(--moss-800);
+  --color-moss-900: var(--moss-900);
+  --color-ochre-50: var(--ochre-50);
+  --color-ochre-500: var(--ochre-500);
+  --color-ochre-700: var(--ochre-700);
+  --color-ochre-800: var(--ochre-800);
+  --color-rust-50: var(--rust-50);
+  --color-rust-500: var(--rust-500);
+  --color-rust-600: var(--rust-600);
+  --color-rust-700: var(--rust-700);
+  --color-rust-800: var(--rust-800);
+
+  --font-size-kicker: 0.6875rem;
+  --line-height-kicker: 1.2;
+  --letter-spacing-kicker: 0.18em;
+
+  --shadow-hairline: 0 1px 0 0 var(--rule-200);
+  --shadow-paper: 0 24px 64px -32px rgb(26 23 20 / 0.18), 0 2px 8px -4px rgb(26 23 20 / 0.08);
+
+  --animate-fade-in-up: fade-in-up 220ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  --animate-pulse-dot: pulse-dot 1.4s ease-in-out infinite;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+}
+
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.85);
+  }
+}
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@layer base {
+  :root {
+    --paper-50: #faf7f2;
+    --paper-100: #f5f1e8;
+    --cream-50: #f2ede2;
+    --cream-100: #ebe4d5;
+    --rule-200: #e4dccb;
+    --rule-300: #d6ccb6;
+    --ink-400: #9a8e78;
+    --ink-500: #736857;
+    --ink-600: #5a5044;
+    --ink-700: #3d362e;
+    --ink-900: #1a1714;
+    --accent-50: #fbede6;
+    --accent-600: #c24d2c;
+    --accent-700: #9f3e22;
+    --moss-50: #eef3e2;
+    --moss-200: #cbdab0;
+    --moss-500: #6b8a4a;
+    --moss-600: #557036;
+    --moss-700: #3f5424;
+    --moss-800: #2d4020;
+    --moss-900: #2a3815;
+    --ochre-50: #faf1d8;
+    --ochre-500: #c29a2e;
+    --ochre-700: #8b6a14;
+    --ochre-800: #725510;
+    --rust-50: #f8e4d9;
+    --rust-500: #b14a2a;
+    --rust-600: #923b1e;
+    --rust-700: #74301a;
+    --rust-800: #5c2614;
+    color-scheme: light;
+  }
+
+  .dark {
+    --paper-50: #14110e;
+    --paper-100: #1a1611;
+    --cream-50: #1f1a14;
+    --cream-100: #272118;
+    --rule-200: #332c22;
+    --rule-300: #3f372c;
+    --ink-400: #7d7560;
+    --ink-500: #9a917d;
+    --ink-600: #b5ac97;
+    --ink-700: #d4ccb9;
+    --ink-900: #efe8da;
+    --accent-50: #3b1e14;
+    --accent-600: #e36a4a;
+    --accent-700: #c24d2c;
+    --moss-50: #1f2a14;
+    --moss-200: #3a4d24;
+    --moss-500: #8fae6e;
+    --moss-600: #a0bf7f;
+    --moss-700: #b7d196;
+    --moss-800: #cfe5ac;
+    --moss-900: #d8ebb8;
+    --ochre-50: #2c2310;
+    --ochre-500: #dbb54b;
+    --ochre-700: #e8c969;
+    --ochre-800: #efd67e;
+    --rust-50: #2c1610;
+    --rust-500: #d26b4a;
+    --rust-600: #e48564;
+    --rust-700: #f0a286;
+    --rust-800: #f5baa0;
+    color-scheme: dark;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    background: var(--paper-50);
+    color: var(--ink-900);
+    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .focus-ring:focus-visible,
+  :where(button, a, input, select, textarea, [tabindex]):focus-visible {
+    outline: 2px solid var(--accent-600);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--accent-600) 30%, transparent);
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 h-9 px-4 rounded-[4px] bg-ink-900 text-paper-50 hover:bg-ink-700 font-sans text-[13px] font-medium transition-colors disabled:opacity-50;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 h-9 px-4 rounded-[4px] bg-paper-50 text-ink-900 shadow-[inset_0_0_0_1px_var(--rule-300)] hover:bg-cream-50 font-sans text-[13px] font-medium transition-colors disabled:opacity-50;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-1.5 h-8 px-2.5 rounded-[4px] text-ink-600 hover:text-ink-900 hover:bg-cream-50 font-sans text-[12px] transition-colors;
+  }
+  .btn-accent {
+    @apply inline-flex items-center justify-center gap-2 h-9 px-4 rounded-[4px] bg-accent-600 text-paper-50 hover:bg-accent-700 font-sans text-[13px] font-medium transition-colors disabled:opacity-50;
+  }
+
+  .ed-input {
+    @apply w-full h-10 px-3 rounded-[4px] bg-paper-50 text-ink-900 shadow-[inset_0_0_0_1px_var(--rule-300)] hover:shadow-[inset_0_0_0_1px_var(--ink-400)] focus:shadow-[inset_0_0_0_2px_var(--accent-600)] focus:outline-none font-sans text-[14px] placeholder:text-ink-400 transition-shadow;
+  }
+  .ed-label {
+    @apply block font-sans text-[12px] font-medium uppercase tracking-[0.04em] text-ink-500 mb-1.5;
+  }
+
+  .ed-skeleton {
+    background: linear-gradient(
+      90deg,
+      var(--cream-50) 0%,
+      var(--paper-100) 50%,
+      var(--cream-50) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.6s linear infinite;
+    border-radius: 4px;
+  }
+
+  .ed-code {
+    @apply font-mono text-[0.85em] bg-cream-50 text-ink-900 shadow-[inset_0_0_0_1px_var(--rule-300)] rounded-[4px] px-1 py-px;
+  }
+}

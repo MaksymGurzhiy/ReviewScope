@@ -1,0 +1,43 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0" version="26.3.0">
+  <diagram name="Classes-NLP" id="0">
+    <mxGraphModel dx="1546" dy="852" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="826" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="pipe" value="&lt;b&gt;NLPPipeline&lt;/b&gt;&#xa;━━━━━━━━━━━━━━━━━━━━━━━&#xa;- sentiment: SentimentAnalyzer&#xa;- topics: TopicExtractor&#xa;- keywords: KeywordExtractor&#xa;- aspects: AspectAnalyzer&#xa;- summary: SummaryGenerator&#xa;- _blocklist: list[str]&#xa;━━━━━━━━━━━━━━━━━━━━━━━&#xa;+ run(reviews, options, on_progress, file_name)&#xa;- _filename_blocklist(file_name) → list[str]&#xa;- _run_sentiment / _run_topics / _run_keywords" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;spacingLeft=8;spacingTop=4;" parent="1" vertex="1">
+          <mxGeometry x="420" y="40" width="320" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="sa" value="&lt;b&gt;SentimentAnalyzer&lt;/b&gt;&#xa;━━━━━━━━━━━━━━━━━━━━━&#xa;- model_name: str = nlptown/bert-base-...&#xa;- pipeline: HFPipeline&#xa;- device: int (CUDA или CPU)&#xa;━━━━━━━━━━━━━━━━━━━━━&#xa;+ analyze(reviews) → SentimentSummary&#xa;- _normalize_label(raw) → str&#xa;- _correct_with_rating(label, score, rating, text)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;spacingLeft=8;spacingTop=4;" parent="1" vertex="1">
+          <mxGeometry x="20" y="320" width="280" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="te" value="&lt;b&gt;TopicExtractor&lt;/b&gt;&#xa;━━━━━━━━━━━━━━━━━━━━━&#xa;- model: BERTopic&#xa;- vectorizer: CountVectorizer&#xa;- blocklist: list[str]&#xa;━━━━━━━━━━━━━━━━━━━━━&#xa;+ extract(reviews, blocklist)&#xa;- _filter_topic_words(words)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;spacingLeft=8;spacingTop=4;" parent="1" vertex="1">
+          <mxGeometry x="320" y="320" width="240" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="ke" value="&lt;b&gt;KeywordExtractor (log-odds)&lt;/b&gt;&#xa;━━━━━━━━━━━━━━━━━━━━━━━━&#xa;- nlp: spaCy en_core_web_sm (POS+NER)&#xa;- POSITIVE_WORDS / NEGATIVE_WORDS&#xa;- NER_BLOCK = {ORG, PERSON, PRODUCT, GPE, ...}&#xa;━━━━━━━━━━━━━━━━━━━━━━━━&#xa;+ extract(reviews, blocklist) → KeywordSummary&#xa;- _candidates_from_doc(doc) → Counter&#xa;- _log_odds(target, background) → dict[str, float]&#xa;- _opinion_boost(token, polarity) → float&#xa;- _rank(scores, polarity, top_n)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;spacingLeft=8;spacingTop=4;" parent="1" vertex="1">
+          <mxGeometry x="580" y="320" width="320" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="aa" value="&lt;b&gt;AspectAnalyzer (ABSA)&lt;/b&gt;&#xa;━━━━━━━━━━━━━━━━━━━━━━━&#xa;- nlp: spaCy en_core_web_sm&#xa;- extra_blocklist: list[str]&#xa;- min_count: int (adaptive)&#xa;- OPINION_DEPS = {amod, acomp, nsubj, ...}&#xa;━━━━━━━━━━━━━━━━━━━━━━━&#xa;+ analyze(reviews) → AspectSummary&#xa;+ discover_aspects(reviews) → list[str]&#xa;- _score_window(tokens, pos, span) → float&#xa;- _mine_opinions(reviews, aspects) → dict&#xa;- aggregate(reviews, aspects) → dict" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;spacingLeft=8;spacingTop=4;" parent="1" vertex="1">
+          <mxGeometry x="920" y="320" width="320" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="sg" value="&lt;b&gt;SummaryGenerator&lt;/b&gt;&#xa;━━━━━━━━━━━━━━━━━━━━━━━&#xa;+ generate(sentiment, topics, keywords, aspects)&#xa;- _conclusion(...) → ConclusionBlock&#xa;- _aspect_block(aspect, mentions, opinions)&#xa;- _tier(polarity) → star|strength|split|weakness|critical&#xa;- _action_plan(weak_aspects) → list[str]" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;spacingLeft=8;spacingTop=4;" parent="1" vertex="1">
+          <mxGeometry x="370" y="620" width="380" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="r1" style="endArrow=diamondThin;endFill=0;html=1;startArrow=none;" parent="1" source="pipe" target="sa" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r2" style="endArrow=diamondThin;endFill=0;html=1;startArrow=none;" parent="1" source="pipe" target="te" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r3" style="endArrow=diamondThin;endFill=0;html=1;startArrow=none;" parent="1" source="pipe" target="ke" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r4" style="endArrow=diamondThin;endFill=0;html=1;startArrow=none;" parent="1" source="pipe" target="aa" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r5" style="endArrow=diamondThin;endFill=0;html=1;startArrow=none;" parent="1" source="pipe" target="sg" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

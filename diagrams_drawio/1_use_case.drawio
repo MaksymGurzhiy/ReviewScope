@@ -1,0 +1,94 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0" version="26.3.0">
+  <diagram name="UseCase" id="uc1">
+    <mxGraphModel dx="1418" dy="780" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="826" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="actor1" value="Користувач" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+          <mxGeometry x="60" y="340" width="40" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="actor2" value="Адміністратор Supabase" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+          <mxGeometry x="980" y="340" width="40" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="boundary" value="ReviewScope Web Platform" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#666666;verticalAlign=top;" parent="1" vertex="1">
+          <mxGeometry x="200" y="60" width="700" height="700" as="geometry" />
+        </mxCell>
+        <mxCell id="uc1" value="Реєстрація" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="280" y="100" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="uc2" value="Автентифікація" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="280" y="180" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="uc3" value="Створити проєкт" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+          <mxGeometry x="280" y="260" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="uc4" value="Завантажити CSV/XLSX/JSON" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+          <mxGeometry x="280" y="340" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="uc5" value="Запустити NLP-аналіз" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+          <mxGeometry x="280" y="420" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="uc6" value="Переглянути результати" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+          <mxGeometry x="540" y="220" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="uc7" value="Експортувати PDF" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+          <mxGeometry x="550" y="300" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="uc8" value="Експортувати CSV" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+          <mxGeometry x="550" y="380" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="uc9" value="Переглянути історію" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+          <mxGeometry x="540" y="460" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="uc10" value="Видалити аналіз" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+          <mxGeometry x="550" y="540" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="uc11" value="Зберігання даних &amp; RLS" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+          <mxGeometry x="740" y="340" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="endArrow=none;html=1;" parent="1" source="actor1" target="uc1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" style="endArrow=none;html=1;" parent="1" source="actor1" target="uc2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" style="endArrow=none;html=1;" parent="1" source="actor1" target="uc3" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" style="endArrow=none;html=1;" parent="1" source="actor1" target="uc4" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" style="endArrow=none;html=1;" parent="1" source="actor1" target="uc5" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" style="endArrow=none;html=1;" parent="1" source="actor1" target="uc6" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" style="endArrow=none;html=1;" parent="1" source="actor1" target="uc9" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" style="endArrow=none;html=1;" parent="1" source="actor1" target="uc10" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" style="endArrow=none;html=1;" parent="1" source="uc11" target="actor2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="inc1" value="«include»" style="endArrow=open;html=1;dashed=1;fontStyle=2;" parent="1" source="uc4" target="uc5" edge="1">
+          <mxGeometry x="-0.3333" y="30" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="inc2" value="«include»" style="endArrow=open;html=1;dashed=1;fontStyle=2;" parent="1" source="uc6" target="uc7" edge="1">
+          <mxGeometry x="-0.0994" y="-26" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="inc3" value="«include»" style="endArrow=open;html=1;dashed=1;fontStyle=2;" parent="1" source="uc6" target="uc8" edge="1">
+          <mxGeometry x="0.6364" y="-30" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
