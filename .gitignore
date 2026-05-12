@@ -48,9 +48,9 @@ outputs/visualizations/*
 !outputs/reports/.gitkeep
 !outputs/visualizations/.gitkeep
 
-# ML Models cache
+# ML Models cache (HF/transformers download dirs at repo root only)
 .cache/
-models/
+/models/
 
 # OS
 .DS_Store
