@@ -22,8 +22,11 @@ RUN apt-get update \
 
 COPY requirements.txt .
 
+# Install CPU-only torch first (saves ~1.5 GB vs default CUDA build),
+# then resolve the rest of the requirements which will see torch already satisfied.
 RUN pip install --upgrade pip \
-    && pip install -r requirements.txt
+    && pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu "torch>=2.0.0" \
+    && pip install --no-cache-dir -r requirements.txt
 
 COPY src ./src
 COPY data/test ./data/test
