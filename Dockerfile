@@ -29,6 +29,7 @@ RUN pip install --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt
 
 COPY src ./src
+COPY config ./config
 COPY data/test ./data/test
 COPY .env.example ./.env.example
 
