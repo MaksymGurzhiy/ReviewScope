@@ -1,165 +1,198 @@
-"""BERTopic-based topic modeling.
-
-Falls back to a simpler TF-IDF clustering if BERTopic refuses to fit (which
-happens on tiny / very homogeneous datasets). Output schema:
-
-    {
-        "total_topics": int,
-        "topics": [
-            {"topic_id": int, "label": str, "name": str,
-             "keywords": [str, ...], "count": int}
-        ],
-    }
 """
-from __future__ import annotations
-
+Topic Extraction using BERTopic
+"""
 import logging
-import os
 import re
-from collections import Counter
-from typing import Any, Dict, Iterable, List, Optional
+import time
+from typing import Any, Dict, List, Tuple
+
+import torch
+from bertopic import BERTopic
+from sentence_transformers import SentenceTransformer
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS as _SKLEARN_STOP
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
-
-_GENERIC_BLOCKLIST = {
-    "the", "and", "this", "that", "with", "for", "you", "your", "have",
-    "but", "not", "are", "was", "were", "they", "them", "their", "from",
-    "very", "just", "really", "ive", "i've", "im", "i'm", "would", "could",
-    "should", "than", "then", "thing", "things", "stuff",
-}
-
-
-def _clean_token(tok: str) -> str:
-    return re.sub(r"[^a-zA-Z\-]", "", (tok or "").lower())
+# Domain-AGNOSTIC stop-word list: only generic English + tiny conversational
+# fillers. We deliberately do NOT hard-code domain words ("hotel", "pizza",
+# "ice", etc.) — those would silently break topic modelling on any other
+# dataset. Domain-defining tokens are filtered adaptively below via the
+# CountVectorizer's `max_df` cutoff.
+_CONVO_STOP = {'not', 'no', 'yes', 'ok', 'okay', 'oh', 'really'}
+_TOPIC_STOP_WORDS = list(_SKLEARN_STOP | _CONVO_STOP)
 
 
 class TopicExtractor:
-    """Lazy BERTopic wrapper. Skips if there are too few reviews."""
+    """Topic extraction using BERTopic"""
+    
+    def __init__(self, 
+                 embedding_model: str = "paraphrase-multilingual-MiniLM-L12-v2",
+                 min_topic_size: int = 5,
+                 nr_topics: int = 10,
+                 extra_blocklist: List[str] | None = None):
+        """
+        Initialize topic extractor
 
-    def __init__(
-        self,
-        embedding_model: str = DEFAULT_EMBEDDING_MODEL,
-        extra_blocklist: Optional[Iterable[str]] = None,
-        min_topic_size: int = 5,
-    ) -> None:
-        self.embedding_model = embedding_model
-        self.min_topic_size = max(2, min_topic_size)
-        self._blocklist = _GENERIC_BLOCKLIST | {
-            _clean_token(t) for t in (extra_blocklist or []) if t
+        Args:
+            embedding_model: Sentence transformer model name
+            min_topic_size: Minimum size for a topic
+            nr_topics: Target number of topics (None for automatic)
+            extra_blocklist: domain-specific words (e.g. parsed from the
+                uploaded file name) that should never appear as topic
+                keywords - filtered post-hoc from c-TF-IDF results.
+        """
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        logger.info("Loading topic embedding model %s on %s", embedding_model, device)
+        t0 = time.perf_counter()
+        self.embedding_model = SentenceTransformer(embedding_model, device=device)
+
+        self.min_topic_size = min_topic_size
+        self.nr_topics = nr_topics
+        self.topic_model = None
+        # Canonical (whitespace-stripped, plural-stripped) blocklist so
+        # blocking "airpods" also blocks "airpod", "airpods", "AirPod".
+        self._blocklist_canon: set[str] = {
+            re.sub(r"\s+", "", w.lower()).rstrip("s")
+            for w in (extra_blocklist or []) if w and len(w) >= 4
         }
-        self._model = None
-        self._summary: Dict[str, Any] = {"total_topics": 0, "topics": []}
 
-    # ---- public ----------------------------------------------------------
-    def analyze_reviews(self, reviews: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        texts = [str(r.get("text") or "").strip() for r in reviews]
-        valid_idx = [i for i, t in enumerate(texts) if len(t) > 5]
-        if len(valid_idx) < max(self.min_topic_size, 5):
-            logger.info("TopicExtractor: not enough reviews (%d), skipping.", len(valid_idx))
-            return reviews
+        logger.info(
+            "Topic extractor ready in %.1fs (device=%s)",
+            time.perf_counter() - t0, device,
+        )
 
-        valid_texts = [texts[i] for i in valid_idx]
+    def _blocked(self, word: str) -> bool:
+        if not self._blocklist_canon:
+            return False
+        canon = re.sub(r"\s+", "", word.lower()).rstrip("s")
+        return canon in self._blocklist_canon
+    
+    def extract_topics(self, texts: List[str]) -> Tuple[List[int], List[float]]:
+        """
+        Extract topics from texts
+        
+        Args:
+            texts: List of review texts
+            
+        Returns:
+            Tuple of (topic assignments, probabilities)
+        """
+        logger.info(f"Extracting topics from {len(texts)} texts")
+        
+        if len(texts) < self.min_topic_size:
+            logger.warning(f"Too few texts ({len(texts)}) for topic modeling. Minimum: {self.min_topic_size}")
+            return [-1] * len(texts), [0.0] * len(texts)
+        
         try:
-            topic_ids = self._fit_bertopic(valid_texts)
-        except Exception as exc:  # noqa: BLE001
-            logger.warning("BERTopic failed (%s); using TF-IDF fallback.", exc)
-            topic_ids = self._fallback_tfidf(valid_texts)
-
-        for idx, topic_id in zip(valid_idx, topic_ids):
-            reviews[idx]["topic_id"] = int(topic_id)
-
-        self._build_summary(valid_texts, topic_ids)
-        return reviews
-
-    def get_summary(self) -> Dict[str, Any]:
-        return self._summary
-
-    # ---- internals -------------------------------------------------------
-    def _fit_bertopic(self, texts: List[str]) -> List[int]:
-        from bertopic import BERTopic
-        from sentence_transformers import SentenceTransformer
-        from sklearn.feature_extraction.text import CountVectorizer
-
-        if self._model is None:
-            embedder = SentenceTransformer(self.embedding_model)
+            # Create embeddings
+            logger.info("Creating embeddings...")
+            embeddings = self.embedding_model.encode(texts, show_progress_bar=True)
+            
+            # Vectorizer fed to BERTopic for the c-TF-IDF representation:
+            # stop_words = generic English only,
+            # max_df = 0.6  → drops tokens that appear in >60% of all
+            #                 reviews (the domain-defining word, e.g.
+            #                 "hotel" on a hotel dataset, "pizza" on a
+            #                 pizzeria dataset). c-TF-IDF still highlights
+            #                 what makes each cluster *unique* without us
+            #                 hard-coding any domain vocabulary.
+            # min_df = 2    → drops one-off typos and proper nouns.
+            # We only enable max_df when the corpus is big enough for the
+            # cutoff to be meaningful.
+            max_df = 0.6 if len(texts) >= 50 else 1.0
             vectorizer = CountVectorizer(
-                stop_words="english",
-                ngram_range=(1, 2),
+                stop_words=_TOPIC_STOP_WORDS,
                 min_df=2,
+                max_df=max_df,
+                ngram_range=(1, 1),
+                token_pattern=r"(?u)\b[a-zA-Z][a-zA-Z]+\b",
             )
-            self._model = BERTopic(
-                embedding_model=embedder,
-                vectorizer_model=vectorizer,
+
+            # Create topic model
+            self.topic_model = BERTopic(
+                embedding_model=self.embedding_model,
                 min_topic_size=self.min_topic_size,
-                calculate_probabilities=False,
-                verbose=False,
+                nr_topics=self.nr_topics,
+                vectorizer_model=vectorizer,
+                verbose=True
             )
-        topic_ids, _ = self._model.fit_transform(texts)
-        return list(topic_ids)
-
-    def _fallback_tfidf(self, texts: List[str]) -> List[int]:
-        from sklearn.cluster import KMeans
-        from sklearn.feature_extraction.text import TfidfVectorizer
-
-        n_clusters = max(2, min(8, len(texts) // self.min_topic_size))
-        vec = TfidfVectorizer(stop_words="english", ngram_range=(1, 2), min_df=2, max_features=2048)
+            
+            # Fit and transform
+            logger.info("Fitting topic model...")
+            topics, probs = self.topic_model.fit_transform(texts, embeddings)
+            
+            logger.info(f"Found {len(set(topics))} topics")
+            return topics, probs
+            
+        except Exception as e:
+            logger.error(f"Error extracting topics: {str(e)}")
+            return [-1] * len(texts), [0.0] * len(texts)
+    
+    def get_topic_info(self) -> List[Dict[str, Any]]:
+        """Get information about discovered topics"""
+        if not self.topic_model:
+            return []
+        
         try:
-            X = vec.fit_transform(texts)
-        except ValueError:
-            return [0] * len(texts)
-        if X.shape[0] < n_clusters:
-            return [0] * len(texts)
-        km = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
-        labels = km.fit_predict(X)
-        return [int(x) for x in labels]
-
-    def _build_summary(self, texts: List[str], topic_ids: List[int]) -> None:
-        if not texts:
-            self._summary = {"total_topics": 0, "topics": []}
-            return
-
-        # Use BERTopic's own labels when available; otherwise fall back to
-        # the most frequent non-stopwords per cluster.
-        bert_topic_labels: Dict[int, List[str]] = {}
-        if self._model is not None and hasattr(self._model, "get_topic"):
-            try:
-                topics_seen = set(int(t) for t in topic_ids if int(t) != -1)
-                for tid in topics_seen:
-                    words = self._model.get_topic(tid) or []
-                    bert_topic_labels[tid] = [
-                        w for w, _score in words if w and _clean_token(w) not in self._blocklist
-                    ][:8]
-            except Exception:  # noqa: BLE001
-                bert_topic_labels = {}
-
-        topics: List[Dict[str, Any]] = []
-        counts = Counter(topic_ids)
-        for topic_id, count in counts.most_common():
-            if topic_id == -1:
-                continue
-            keywords = bert_topic_labels.get(topic_id) or self._top_words(
-                [t for t, tid in zip(texts, topic_ids) if tid == topic_id]
-            )
-            if not keywords:
-                continue
-            label = " · ".join(keywords[:3])
-            topics.append({
-                "topic_id": int(topic_id),
-                "name": label,
-                "label": label,
-                "keywords": keywords,
-                "count": int(count),
-            })
-
-        self._summary = {"total_topics": len(topics), "topics": topics}
-
-    def _top_words(self, cluster_texts: List[str], k: int = 8) -> List[str]:
-        words: Counter = Counter()
-        for txt in cluster_texts:
-            for tok in re.findall(r"[A-Za-z][A-Za-z\-]{2,}", txt.lower()):
-                if tok in self._blocklist or len(tok) < 3:
+            topic_info = self.topic_model.get_topic_info()
+            
+            topics = []
+            for _, row in topic_info.iterrows():
+                if row['Topic'] == -1:  # Skip outlier topic
                     continue
-                words[tok] += 1
-        return [w for w, _ in words.most_common(k)]
+                
+                topic_id = int(row['Topic'])
+                topic_words = self.topic_model.get_topic(topic_id)
+                # Filter domain-name tokens (e.g. product name from the
+                # uploaded file) so c-TF-IDF doesn't surface them.
+                filtered_words = [
+                    (word, score) for word, score in topic_words
+                    if not self._blocked(word)
+                ]
+
+                topics.append({
+                    'id': topic_id,
+                    'count': int(row['Count']),
+                    'name': row.get('Name', f'Topic {topic_id}'),
+                    'keywords': [word for word, _ in filtered_words[:5]],
+                    'keywords_scores': [[word, float(score)] for word, score in filtered_words[:10]]
+                })
+            
+            return topics
+            
+        except Exception as e:
+            logger.error(f"Error getting topic info: {str(e)}")
+            return []
+    
+    def analyze_reviews(self, reviews: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """
+        Add topic information to reviews
+        
+        Args:
+            reviews: List of review dictionaries
+            
+        Returns:
+            Reviews with added topic information
+        """
+        texts = [r['text'] for r in reviews]
+        topics, probs = self.extract_topics(texts)
+        
+        for review, topic, prob in zip(reviews, topics, probs):
+            review['topic_id'] = int(topic)
+            review['topic_probability'] = float(prob)
+        
+        return reviews
+    
+    def get_summary(self) -> Dict[str, Any]:
+        """Get summary of topics"""
+        topics = self.get_topic_info()
+        
+        if not topics:
+            return {'total_topics': 0, 'topics': []}
+        
+        return {
+            'total_topics': len(topics),
+            'topics': topics,
+            'total_reviews_categorized': sum(t['count'] for t in topics)
+        }

@@ -541,6 +541,70 @@ function SampleCards({ samples }) {
   )
 }
 
+function pickAspectStories(aspects, side, n = 4) {
+  const list = aspects?.aspects || []
+  const enriched = list.map((a) => {
+    const total = a.total_mentions || a.positive + a.negative + a.neutral || 1
+    const score = (a.positive - a.negative) / total
+    const praise = (a.praise_words || a.opinions_positive || a.context_positive || a.positive_words || []).slice(0, 3)
+    const complaints = (a.complaint_words || a.opinions_negative || a.context_negative || a.negative_words || []).slice(0, 3)
+    return { aspect: a.aspect, score, total, praise, complaints }
+  })
+  if (side === 'good') {
+    return enriched
+      .filter((a) => a.score > 0.05 && a.praise.length > 0)
+      .sort((x, y) => y.score - x.score || y.total - x.total)
+      .slice(0, n)
+  }
+  return enriched
+    .filter((a) => a.score < -0.05 && a.complaints.length > 0)
+    .sort((x, y) => x.score - y.score || y.total - x.total)
+    .slice(0, n)
+}
+
+function AspectStoryList({ items, tone }) {
+  if (!items?.length) {
+    return (
+      <p className="font-serif italic text-ink-500">
+        {tone === 'rust' ? 'No standout complaints surfaced.' : 'No standout praise surfaced.'}
+      </p>
+    )
+  }
+  const accentText = tone === 'rust' ? 'text-rust-700' : 'text-moss-700'
+  const phraseText = tone === 'rust' ? 'text-rust-800' : 'text-moss-800'
+  const kicker = tone === 'rust' ? 'Customers complain about' : 'Customers praise'
+  return (
+    <ol className="space-y-7 max-w-[68ch]">
+      {items.map((a, i) => {
+        const phrases = tone === 'rust' ? a.complaints : a.praise
+        const pct = Math.round(Math.abs(a.score) * 100)
+        return (
+          <li key={a.aspect} className="grid grid-cols-[44px_1fr] gap-4 items-baseline">
+            <span className={`font-serif text-[34px] leading-none tabular-nums ${accentText}`}>
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <div>
+              <h4 className="font-serif text-[22px] leading-snug text-ink-900">
+                {a.aspect}
+              </h4>
+              <p className="font-serif text-[16px] leading-[1.55] text-ink-700 mt-2">
+                <span className={`font-sans text-[10px] uppercase tracking-[0.18em] ${accentText} mr-1.5`}>
+                  {kicker}
+                </span>
+                <span className={phraseText}>{phrases.join(', ')}</span>
+              </p>
+              <span className="font-mono text-[11px] text-ink-500 tabular-nums mt-1.5 inline-block">
+                {a.total} mentions · net {tone === 'rust' ? '−' : '+'}
+                {pct}
+              </span>
+            </div>
+          </li>
+        )
+      })}
+    </ol>
+  )
+}
+
 function Recommendations({ items }) {
   if (!items?.length) return null
   return (
@@ -837,31 +901,97 @@ export default function AnalysisDetail() {
         language={fmtLang(r.metrics)}
       />
 
-      <section className="mx-auto max-w-[1240px] px-6 lg:px-10 py-16 grid lg:grid-cols-[1fr_1.1fr] gap-12">
-        <div>
-          <SectionLabel kicker="01" title="The brief" />
-          <div className="space-y-6 mt-8">
+      {insightPulls.length > 0 && (
+        <section className="mx-auto max-w-[1240px] px-6 lg:px-10 py-16">
+          <SectionLabel
+            kicker="01"
+            title="The brief"
+            dek="Three takeaways before you scroll."
+          />
+          <div className="grid md:grid-cols-3 gap-x-10 gap-y-6 mt-10">
             {insightPulls.map((s, i) => (
-              <PullQuote key={i} tone={i === 0 ? verdict.tone : 'rule'} kicker={`Point ${String(i + 1).padStart(2, '0')}`}>
+              <PullQuote
+                key={i}
+                tone={i === 0 ? verdict.tone : 'rule'}
+                kicker={`Point ${String(i + 1).padStart(2, '0')}`}
+              >
                 {s}
               </PullQuote>
             ))}
           </div>
-        </div>
-        <div>
-          <SectionLabel kicker="02" title="Sentiment, in one figure" />
-          <div className="mt-8">
-            <SentimentDonut sentiment={r.sentiment_summary} />
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      <section className="border-t border-rule-200 bg-cream-50/60 dark:bg-paper-100">
+      {(() => {
+        const wrong = pickAspectStories(r.aspects, 'bad', 4)
+        if (!wrong.length) return null
+        return (
+          <section className="border-t border-rule-200 bg-cream-50/60">
+            <div className="mx-auto max-w-[1240px] px-6 lg:px-10 py-16">
+              <SectionLabel
+                kicker="02"
+                title="What's not working"
+                dek="The loudest complaints, ranked by net negative sentiment."
+              />
+              <div className="mt-10">
+                <AspectStoryList items={wrong} tone="rust" />
+              </div>
+            </div>
+          </section>
+        )
+      })()}
+
+      {(() => {
+        const good = pickAspectStories(r.aspects, 'good', 4)
+        if (!good.length) return null
+        return (
+          <section className="mx-auto max-w-[1240px] px-6 lg:px-10 py-16">
+            <SectionLabel
+              kicker="03"
+              title="What's working"
+              dek="Where customers are clearly delighted."
+            />
+            <div className="mt-10">
+              <AspectStoryList items={good} tone="moss" />
+            </div>
+          </section>
+        )
+      })()}
+
+      {!!(r.sample_reviews && r.sample_reviews.length) && (
+        <section className="border-t border-rule-200 bg-cream-50/60">
+          <div className="mx-auto max-w-[1240px] px-6 lg:px-10 py-16">
+            <SectionLabel
+              kicker="04"
+              title="Voices, in their own words"
+              dek="Representative excerpts with detected aspects."
+            />
+            <div className="mt-10">
+              <SampleCards samples={r.sample_reviews || []} />
+            </div>
+          </div>
+        </section>
+      )}
+
+      {!!(r.recommendations && r.recommendations.length) && (
+        <section className="mx-auto max-w-[1240px] px-6 lg:px-10 py-16">
+          <SectionLabel
+            kicker="05"
+            title="What to do next"
+            dek="Concrete next steps, ranked by impact."
+          />
+          <div className="mt-10">
+            <Recommendations items={r.recommendations} />
+          </div>
+        </section>
+      )}
+
+      <section className="border-t border-rule-200 bg-cream-50/60">
         <div className="mx-auto max-w-[1240px] px-6 lg:px-10 py-16">
           <SectionLabel
-            kicker="03"
-            title="What customers talk about"
-            dek="Aspects ranked by net sentiment, with phrases customers leaned on."
+            kicker="06"
+            title="Top aspects, ranked"
+            dek="The full aspect breakdown by net sentiment."
           />
           <div className="mt-10">
             <AspectAnnotatedChart aspects={r.aspects} />
@@ -870,17 +1000,21 @@ export default function AnalysisDetail() {
       </section>
 
       <section className="mx-auto max-w-[1240px] px-6 lg:px-10 py-16">
-        <SectionLabel kicker="04" title="Themes the model surfaced" dek="BERTopic clusters." />
+        <SectionLabel
+          kicker="07"
+          title="Sentiment, in one figure"
+          dek="Distribution of positive, neutral and negative reviews."
+        />
         <div className="mt-10">
-          <TopicsDek topics={r.topics} />
+          <SentimentDonut sentiment={r.sentiment_summary} />
         </div>
       </section>
 
       {showKeywords && (
-        <section className="border-t border-rule-200 bg-cream-50/60 dark:bg-paper-100">
+        <section className="border-t border-rule-200 bg-cream-50/60">
           <div className="mx-auto max-w-[1240px] px-6 lg:px-10 py-16">
             <SectionLabel
-              kicker="05"
+              kicker="08"
               title="Three rooms, three conversations"
               dek="Phrases that distinguish star buckets."
             />
@@ -892,26 +1026,11 @@ export default function AnalysisDetail() {
       )}
 
       <section className="mx-auto max-w-[1240px] px-6 lg:px-10 py-16">
-        <SectionLabel
-          kicker="06"
-          title="Voices, in their own words"
-          dek="Representative excerpts with detected aspects."
-        />
+        <SectionLabel kicker="09" title="Themes the model surfaced" dek="BERTopic clusters." />
         <div className="mt-10">
-          <SampleCards samples={r.sample_reviews || []} />
+          <TopicsDek topics={r.topics} />
         </div>
       </section>
-
-      {!!(r.recommendations && r.recommendations.length) && (
-        <section className="border-t border-rule-200 bg-cream-50/60 dark:bg-paper-100">
-          <div className="mx-auto max-w-[1240px] px-6 lg:px-10 py-16">
-            <SectionLabel kicker="07" title="What to do next" />
-            <div className="mt-10">
-              <Recommendations items={r.recommendations} />
-            </div>
-          </div>
-        </section>
-      )}
 
       <footer className="mx-auto max-w-[1240px] px-6 lg:px-10 pt-10">
         <div className="border-t border-rule-300 pt-6 flex flex-wrap items-center justify-between gap-4 font-sans text-[11px] uppercase tracking-[0.18em] text-ink-500">

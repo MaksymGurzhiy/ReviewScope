@@ -118,10 +118,13 @@ def export_results_pdf(results: Dict[str, Any], analysis_meta: Dict[str, Any]) -
     body = styles["BodyText"]
     body.spaceAfter = 4
     small = ParagraphStyle("Small", parent=body, fontSize=8, textColor=colors.HexColor("#6B7280"))
+    quote = ParagraphStyle(
+        "Quote", parent=body, leftIndent=12, fontSize=10,
+        textColor=colors.HexColor("#374151"), spaceAfter=6,
+    )
 
     story = []
 
-    # ---- Header ----
     story.append(Paragraph("ReviewScope - Analysis Report", h1))
     story.append(Paragraph(
         f"File: {analysis_meta.get('file_name', '-')} | "
@@ -130,43 +133,82 @@ def export_results_pdf(results: Dict[str, Any], analysis_meta: Dict[str, Any]) -
     ))
     story.append(Spacer(1, 8))
 
-    # ---- What customers think (Conclusion goes FIRST in the PDF) ----
+    # 01 - The brief: conclusion or top insights up front.
     summary_text = results.get("summary_text") or ""
     main_summary, conclusion_text = _split_conclusion(summary_text)
+    insights = results.get("insights") or []
     if conclusion_text:
-        story.append(Paragraph("What customers think", h2))
+        story.append(Paragraph("The brief", h2))
         for para in conclusion_text.split("\n\n"):
             for line in para.split("\n"):
                 if line.strip():
                     story.append(Paragraph(_html_escape(line), body))
             story.append(Spacer(1, 4))
+    elif insights:
+        story.append(Paragraph("The brief", h2))
+        for ins in insights[:3]:
+            story.append(Paragraph(f"&#8226; {_html_escape(ins)}", body))
 
-    # ---- Executive Summary (numbers at a glance) ----
-    if main_summary:
-        story.append(Paragraph("Executive Summary", h2))
-        for para in main_summary.split("\n\n"):
-            for line in para.split("\n"):
-                if line.strip():
-                    story.append(Paragraph(_html_escape(line), body))
-            story.append(Spacer(1, 4))
+    # 02/03 - Narrative aspect stories (worst / best).
+    aspects_list = (results.get("aspects") or {}).get("aspects") or []
+    wrong = _pick_aspect_stories(aspects_list, side="bad", n=4)
+    good = _pick_aspect_stories(aspects_list, side="good", n=4)
+    if wrong:
+        story.append(Paragraph("What's not working", h2))
+        for i, a in enumerate(wrong, start=1):
+            phrases = ", ".join(a["phrases"]) if a["phrases"] else "-"
+            story.append(Paragraph(
+                f"<b>{i:02d}. {_html_escape(a['aspect'])}</b> &nbsp; "
+                f"<font size=8 color='#6B7280'>{a['total']} mentions &middot; net &minus;{a['pct']}</font>",
+                body,
+            ))
+            story.append(Paragraph(
+                f"<font color='#7F1D1D'>Customers complain about: {_html_escape(phrases)}</font>",
+                quote,
+            ))
+    if good:
+        story.append(Paragraph("What's working", h2))
+        for i, a in enumerate(good, start=1):
+            phrases = ", ".join(a["phrases"]) if a["phrases"] else "-"
+            story.append(Paragraph(
+                f"<b>{i:02d}. {_html_escape(a['aspect'])}</b> &nbsp; "
+                f"<font size=8 color='#6B7280'>{a['total']} mentions &middot; net +{a['pct']}</font>",
+                body,
+            ))
+            story.append(Paragraph(
+                f"<font color='#14532D'>Customers praise: {_html_escape(phrases)}</font>",
+                quote,
+            ))
 
-    # ---- Sentiment ----
-    sent = results.get("sentiment_summary") or {}
-    if sent:
-        story.append(Paragraph("Sentiment Distribution", h2))
-        rows = [
-            ["Total reviews", sent.get("total", "-")],
-            ["Positive", f"{sent.get('positive', 0)} ({sent.get('positive_percent', 0):.1f}%)"],
-            ["Negative", f"{sent.get('negative', 0)} ({sent.get('negative_percent', 0):.1f}%)"],
-        ]
-        story.append(_table(rows))
+    # 04 - Voices, in their own words.
+    samples = results.get("sample_reviews") or []
+    if samples:
+        story.append(Paragraph("Voices, in their own words", h2))
+        for i, r in enumerate(samples[:6], start=1):
+            sent = str(r.get("sentiment") or "neutral").upper()
+            color = {"POSITIVE": "#14532D", "NEGATIVE": "#7F1D1D"}.get(sent, "#78350F")
+            text = (r.get("text") or "").strip()
+            if len(text) > 360:
+                text = text[:357].rstrip() + "..."
+            rating = r.get("rating")
+            rating_str = f" &middot; {rating}/5" if isinstance(rating, (int, float)) else ""
+            story.append(Paragraph(
+                f"<font size=8 color='{color}'>#{i:02d} &middot; {sent}{rating_str}</font>",
+                small,
+            ))
+            story.append(Paragraph(f"&ldquo;{_html_escape(text)}&rdquo;", quote))
 
-    # ---- Aspects ----
-    aspects = (results.get("aspects") or {}).get("aspects") or []
-    if aspects:
-        story.append(Paragraph("Aspect-Based Sentiment Analysis", h2))
+    # 05 - Recommendations (action items, surfaced before raw analytics).
+    if results.get("recommendations"):
+        story.append(Paragraph("What to do next", h2))
+        for i, rec in enumerate(results["recommendations"], start=1):
+            story.append(Paragraph(f"<b>{i:02d}.</b> {_html_escape(rec)}", body))
+
+    # 06 - Full aspect table.
+    if aspects_list:
+        story.append(Paragraph("Top aspects, ranked", h2))
         rows = [["Aspect", "Mentions", "Positive%", "Negative%", "Polarity"]]
-        for a in aspects[:15]:
+        for a in aspects_list[:15]:
             rows.append([
                 a["aspect"],
                 str(a["total_mentions"]),
@@ -176,20 +218,19 @@ def export_results_pdf(results: Dict[str, Any], analysis_meta: Dict[str, Any]) -
             ])
         story.append(_table(rows, header=True))
 
-    # ---- Topics ----
-    topics = (results.get("topics") or {}).get("topics") or []
-    if topics:
-        story.append(Paragraph("Topic Modeling (BERTopic)", h2))
-        rows = [["#", "Count", "Keywords"]]
-        for idx, t in enumerate(topics[:10], start=1):
-            rows.append([
-                str(t.get("id", t.get("topic_id", idx))),
-                str(t.get("count", 0)),
-                ", ".join(t.get("keywords", [])[:6]),
-            ])
-        story.append(_table(rows, header=True))
+    # 07 - Sentiment distribution.
+    sent = results.get("sentiment_summary") or {}
+    if sent:
+        story.append(Paragraph("Sentiment distribution", h2))
+        rows = [
+            ["Total reviews", sent.get("total", "-")],
+            ["Positive", f"{sent.get('positive', 0)} ({sent.get('positive_percent', 0):.1f}%)"],
+            ["Neutral", f"{sent.get('neutral', 0)} ({sent.get('neutral_percent', 0):.1f}%)"],
+            ["Negative", f"{sent.get('negative', 0)} ({sent.get('negative_percent', 0):.1f}%)"],
+        ]
+        story.append(_table(rows))
 
-    # ---- Keywords ----
+    # 08 - Keyword bands.
     kw = results.get("keywords") or {}
     if kw.get("positive_keywords"):
         story.append(Paragraph("Top positive keywords", h2))
@@ -204,20 +245,61 @@ def export_results_pdf(results: Dict[str, Any], analysis_meta: Dict[str, Any]) -
             body,
         ))
 
-    # ---- Insights ----
-    if results.get("insights"):
-        story.append(Paragraph("Insights", h2))
-        for ins in results["insights"]:
-            story.append(Paragraph(f"&#8226; {_html_escape(ins)}", body))
+    # 09 - Topics.
+    topics = (results.get("topics") or {}).get("topics") or []
+    if topics:
+        story.append(Paragraph("Themes the model surfaced", h2))
+        rows = [["#", "Count", "Keywords"]]
+        for idx, t in enumerate(topics[:10], start=1):
+            rows.append([
+                str(t.get("id", t.get("topic_id", idx))),
+                str(t.get("count", 0)),
+                ", ".join(t.get("keywords", [])[:6]),
+            ])
+        story.append(_table(rows, header=True))
 
-    # ---- Recommendations ----
-    if results.get("recommendations"):
-        story.append(Paragraph("Recommendations", h2))
-        for rec in results["recommendations"]:
-            story.append(Paragraph(f"&#8226; {_html_escape(rec)}", body))
+    # 10 - Executive summary numbers (kept for completeness, last).
+    if main_summary:
+        story.append(Paragraph("Executive summary", h2))
+        for para in main_summary.split("\n\n"):
+            for line in para.split("\n"):
+                if line.strip():
+                    story.append(Paragraph(_html_escape(line), body))
+            story.append(Spacer(1, 4))
 
     doc.build(story)
     return buffer.getvalue()
+
+
+def _pick_aspect_stories(aspects: List[Dict[str, Any]], *, side: str, n: int = 4) -> List[Dict[str, Any]]:
+    out: List[Dict[str, Any]] = []
+    for a in aspects or []:
+        total = a.get("total_mentions") or (a.get("positive", 0) + a.get("negative", 0) + a.get("neutral", 0)) or 1
+        pos = a.get("positive", 0)
+        neg = a.get("negative", 0)
+        score = (pos - neg) / total
+        praise = (
+            a.get("praise_words")
+            or a.get("opinions_positive")
+            or a.get("context_positive")
+            or a.get("positive_words")
+            or []
+        )[:3]
+        complaints = (
+            a.get("complaint_words")
+            or a.get("opinions_negative")
+            or a.get("context_negative")
+            or a.get("negative_words")
+            or []
+        )[:3]
+        if side == "good" and score > 0.05 and praise:
+            out.append({"aspect": a["aspect"], "score": score, "total": total,
+                        "phrases": list(praise), "pct": round(abs(score) * 100)})
+        elif side == "bad" and score < -0.05 and complaints:
+            out.append({"aspect": a["aspect"], "score": score, "total": total,
+                        "phrases": list(complaints), "pct": round(abs(score) * 100)})
+    out.sort(key=lambda x: (-x["score"] if side == "good" else x["score"], -x["total"]))
+    return out[:n]
 
 
 def _split_conclusion(summary_text: str) -> tuple[str, str]:
