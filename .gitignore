@@ -78,8 +78,8 @@ _extracted_images/
 _zvit_images/
 _diplom_images/
 _new_images/
-_*.py
-_*.txt
+/_*.py
+/_*.txt
 generate_report.py
 /d1.drawio
 
