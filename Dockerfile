@@ -26,7 +26,8 @@ COPY requirements.txt .
 # then resolve the rest of the requirements which will see torch already satisfied.
 RUN pip install --upgrade pip \
     && pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu "torch>=2.0.0" \
-    && pip install --no-cache-dir -r requirements.txt
+    && pip install --no-cache-dir -r requirements.txt \
+    && python -m spacy download en_core_web_sm
 
 COPY src ./src
 COPY config ./config
